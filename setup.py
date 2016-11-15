@@ -12,13 +12,12 @@ setup(name='slowloris',
       author='Sygnogen',
       author_email='',
       url='',
-      license='MIT',
+      license='GPL-3.0+',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
       ],
-      scripts=['bin/funniest-joke'],
       entry_points={'console_scripts': ['slowloris = slowloris.__main__:main']},
       )
