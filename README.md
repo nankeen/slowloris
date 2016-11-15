@@ -16,13 +16,12 @@ This includes but is not necessarily limited to the following:
 
 [More information on Wikipedia](https://en.wikipedia.org/wiki/Slowloris_(computer_security))
 
----
 ## Installation
 Simply run `setup.py install`
 
----
 ## Usage
-
->usage: slowloris [-h] [--sock_count SOCK_COUNT]
->                 [--thread_count THREAD_COUNT] [--port PORT]
->                 host
+```
+usage: slowloris [-h] [--sock_count SOCK_COUNT]
+                 [--thread_count THREAD_COUNT] [--port PORT]
+                 host
+```
