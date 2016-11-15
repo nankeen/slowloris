@@ -15,9 +15,11 @@ This includes but is not necessarily limited to the following:
 - Deny All WAF (patched)
 
 [More information on Wikipedia](https://en.wikipedia.org/wiki/Slowloris_(computer_security))
+
 ---
 ## Installation
 Simply run `setup.py install`
+
 ---
 ## Usage
 
