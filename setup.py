@@ -7,11 +7,9 @@ version = '1.0'
 setup(name='slowloris',
       version=version,
       description="An implementation of SlowLoris in Python",
-      long_description="""\
-An implementation of SlowLoris in Python""",
       classifiers=[],
       keywords='',
-      author='sygnogen',
+      author='Sygnogen',
       author_email='',
       url='',
       license='MIT',
