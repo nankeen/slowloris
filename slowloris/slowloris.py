@@ -1,15 +1,11 @@
 import socket
-import logging
-import argparse
 
 from sys import exit, stdout
 from time import sleep
 from random import randint
 from queue import Queue
 from threading import Thread
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+from . import logger
 
 
 class Worker(Thread):
