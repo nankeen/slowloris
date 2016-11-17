@@ -1,6 +1,5 @@
 import socket
 
-from sys import exit, stdout
 from time import sleep
 from random import randint
 from multiprocessing.pool import ThreadPool
