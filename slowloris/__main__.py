@@ -1,5 +1,6 @@
 import argparse
 from .slowloris import SlowLoris
+import tkinter
 
 
 def main():
