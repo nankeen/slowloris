@@ -98,8 +98,8 @@ class SlowLoris:
 
             # Wraps the socket for https
             if self.ssl is True:
-                logger.debug('SSL wrapping socket')
                 sock = ssl.wrap_socket(sock)
+                logger.debug('Wrapped SSL')
 
             # Send the headers of the HTTP request
             sock.send('GET /?{} HTTP/1.1\r\n'.format(randint(0, 50000)).encode('utf-8'))
@@ -129,6 +129,8 @@ class SlowLoris:
         for sock in self.sockets:
             sock.close()
         self.pool.terminate()
+
+        logger.debug('Sockets closed successfully')
 
     def keep_alive(self):
         '''
