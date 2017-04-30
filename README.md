@@ -20,8 +20,24 @@ This includes but is not necessarily limited to the following:
 Simply run `setup.py install`
 
 ## Usage
+Execute `slowloris` in a terminal after install
+
 ```
-usage: slowloris [-h] [--sock_count SOCK_COUNT]
-                 [--thread_count THREAD_COUNT] [--port PORT]
+usage: slowloris [-h] [--sock_count SOCK_COUNT] [--thread_count THREAD_COUNT]
+                 [-p PORT] [-v] [-ua] [--ssl]
                  host
+
+SlowLoris script written in Python by NaNkeen
+
+positional arguments:
+  host
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --sock_count SOCK_COUNT
+  --thread_count THREAD_COUNT
+  -p PORT, --port PORT
+  -v, --verbose         Verbose mode for more information
+  -ua, --randon_agent   Randomizes user-agent
+  --ssl                 User SSL for requests
 ```
