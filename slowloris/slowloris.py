@@ -56,7 +56,7 @@ class SlowLoris:
         # randomizing user agent
         if random_agent is True:
             logger.info('Selecting a random user agent...')
-            self.headers[0] = 'User-Agent: {}'.format(self.user_agents[randint(0, len(user_agents))])
+            self.headers[0] = 'User-Agent: {}'.format(self.user_agents[randint(0, len(self.user_agents) - 1)])
 
         logger.info('Attacking {} with {} sockets'.format(target[0], sock_count))
         self._sock_count = sock_count
